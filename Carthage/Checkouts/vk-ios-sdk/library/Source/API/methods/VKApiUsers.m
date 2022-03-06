@@ -31,29 +31,23 @@
 }
 
 - (VKRequest *)get:(NSDictionary *)params {
-    return [self prepareRequestWithMethodName:@"get"
-                                   parameters:params
-                                   modelClass:[VKUsersArray class]];
+    return [self prepareRequestWithMethodName:@"get" parameters:params modelClass:[VKUsersArray class]];
 }
 
 #pragma mark search
 
 - (VKRequest *)search:(NSDictionary *)params {
-    return [self prepareRequestWithMethodName:@"search"
-                                   parameters:params
-                                   modelClass:[VKUsersArray class]];
+    return [self prepareRequestWithMethodName:@"search" parameters:params modelClass:[VKUsersArray class]];
 }
 
 #pragma mark isAppUser
 
 - (VKRequest *)isAppUser {
-    return [self prepareRequestWithMethodName:@"isAppUser"
-                                   parameters:nil];
+    return [self prepareRequestWithMethodName:@"isAppUser" parameters:nil];
 }
 
 - (VKRequest *)isAppUser:(NSInteger)userID {
-    return [self prepareRequestWithMethodName:@"isAppUser"
-                                   parameters:@{VK_API_USER_ID : @(userID)}];
+    return [self prepareRequestWithMethodName:@"isAppUser" parameters:@{VK_API_USER_ID : @(userID)}];
 }
 
 #pragma mark subscriptions
@@ -63,8 +57,7 @@
 }
 
 - (VKRequest *)getSubscriptions:(NSDictionary *)params {
-    return [self prepareRequestWithMethodName:@"getSubscriptions"
-                                   parameters:params];
+    return [self prepareRequestWithMethodName:@"getSubscriptions" parameters:params];
 }
 
 #pragma mark followers
@@ -74,9 +67,7 @@
 }
 
 - (VKRequest *)getFollowers:(NSDictionary *)params {
-    return [self prepareRequestWithMethodName:@"getFollowers"
-                                   parameters:params
-                                   modelClass:[VKUsersArray class]];
+    return [self prepareRequestWithMethodName:@"getFollowers" parameters:params modelClass:[VKUsersArray class]];
 }
 
 @end

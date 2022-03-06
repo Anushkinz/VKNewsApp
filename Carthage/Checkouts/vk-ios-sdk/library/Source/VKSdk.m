@@ -251,11 +251,11 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
 
     VKSdk *instance = [self instance];
 
-    void (^hideViews)(void) = ^{
+    void (^hideViews)() = ^{
         if (instance.presentedSafariViewController) {
             UIViewController *safariVC = instance.presentedSafariViewController;
             [safariVC vks_viewControllerWillDismiss];
-            void (^dismissBlock)(void) = ^{
+            void (^dismissBlock)() = ^{
                 [safariVC vks_viewControllerDidDismiss];
             };
             if (safariVC.isBeingDismissed) {
@@ -316,7 +316,7 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
     NSDictionary *parametersDict = [VKUtil explodeQueryString:parametersString];
     BOOL inAppCheck = [[passedUrl host] isEqual:@"oauth.vk.com"];
 
-    void (^throwError)(void) = ^{
+    void (^throwError)() = ^{
         VKError *error = [VKError errorWithQuery:parametersDict];
         if (!validation) {
             notifyAuthorization(nil, error);
@@ -446,7 +446,7 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
             }
             wakeUpBlock(instance.authState, error);
 
-        } trackVisitor:firstCall token:token];
+        }                    trackVisitor:firstCall token:token];
 
     }
 
@@ -519,7 +519,7 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
         if (infoCallback) {
             infoCallback(user, [VK_ENSURE_NUM(response.json[@"permissions"]) integerValue], nil);
         }
-    } errorBlock:^(NSError *error) {
+    }                errorBlock:^(NSError *error) {
         if (infoCallback) {
             infoCallback(nil, 0, error);
         }
@@ -540,7 +540,7 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
 }
 
 - (void)notifyDelegate:(SEL)sel obj:(id)obj {
-    for (VKWeakDelegate *del in [self.sdkDelegates copy]) {
+    for (VKWeakDelegate *del in self.sdkDelegates) {
         if ([del respondsToSelector:sel]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
@@ -554,7 +554,7 @@ static NSString *VK_ACCESS_TOKEN_DEFAULTS_KEY = @"VK_ACCESS_TOKEN_DEFAULTS_KEY_D
     VKAccessToken *old = _accessToken;
     _accessToken = accessToken;
 
-    for (VKWeakDelegate *del in [self.sdkDelegates copy]) {
+    for (VKWeakDelegate *del in self.sdkDelegates) {
         if ([del respondsToSelector:@selector(vkSdkAccessTokenUpdated:oldToken:)]) {
             [del performSelector:@selector(vkSdkAccessTokenUpdated:oldToken:) withObject:self.accessToken withObject:old];
         }

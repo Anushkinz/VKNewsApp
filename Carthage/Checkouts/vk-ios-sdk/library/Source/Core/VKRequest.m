@@ -297,8 +297,8 @@ void vksdk_dispatch_on_main_queue_now(void(^block)(void)) {
     }
 
     [operation setCompletionBlockWithSuccess:^(VKHTTPOperation *completedOperation, id JSON) {
-        [self->_requestTiming loaded];
-        if (self->_executionOperation.isCancelled) {
+        [_requestTiming loaded];
+        if (_executionOperation.isCancelled) {
             return;
         }
         if ([JSON objectForKey:@"error"]) {
@@ -310,9 +310,9 @@ void vksdk_dispatch_on_main_queue_now(void(^block)(void)) {
             return;
         }
         [self provideResponse:JSON responseString:completedOperation.responseString];
-    } failure:^(VKHTTPOperation *completedOperation, NSError *error) {
-        [self->_requestTiming loaded];
-        if (self->_executionOperation.isCancelled) {
+    }                                failure:^(VKHTTPOperation *completedOperation, NSError *error) {
+        [_requestTiming loaded];
+        if (_executionOperation.isCancelled) {
             return;
         }
         if (completedOperation.response.statusCode == 200) {
@@ -322,14 +322,14 @@ void vksdk_dispatch_on_main_queue_now(void(^block)(void)) {
         if (self.attempts == 0 || ++self.attemptsUsed < self.attempts) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (300 * NSEC_PER_MSEC)), self.responseQueue,
                     ^(void) {
-                        [self executeWithResultBlock:self->_completeBlock errorBlock:self->_errorBlock];
+                        [self executeWithResultBlock:_completeBlock errorBlock:_errorBlock];
                     });
             return;
         }
 
         VKError *vkErr = [VKError errorWithCode:completedOperation.response ? completedOperation.response.statusCode : error.code];
         [self provideError:[error copyWithVkError:vkErr]];
-        [self->_requestTiming finished];
+        [_requestTiming finished];
 
     }];
     operation.successCallbackQueue = operation.failureCallbackQueue = [VKRequest processingQueue];
@@ -419,18 +419,16 @@ void vksdk_dispatch_on_main_queue_now(void(^block)(void)) {
 - (void)finishRequest {
     void (^block)(void) = NULL;
     if (self.error) {
-        NSError *error = self.error;
         block = ^{
             if (self.errorBlock) {
-                self.errorBlock(error);
+                self.errorBlock(self.error);
             }
-            for (VKRequest *postRequest in self->_postRequestsQueue) {
+            for (VKRequest *postRequest in _postRequestsQueue) {
                 if (postRequest.errorBlock) {
-                    postRequest.errorBlock(error);
+                    postRequest.errorBlock(self.error);
                 }
             }
         };
-        self.error = nil;
     } else {
         block = ^{
             if (self.completeBlock) {
@@ -516,7 +514,7 @@ void vksdk_dispatch_on_main_queue_now(void(^block)(void)) {
         if (error.apiError.errorCode == 6) {
             //Too many requests per second
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (_waitMultiplier * NSEC_PER_SEC)), [[self class] processingQueue], ^{
-                self->_waitMultiplier *= ((arc4random() % 10) + 10) / 10.f;
+                _waitMultiplier *= ((arc4random() % 10) + 10) / 10.f;
                 [self repeat];
             });
             return YES;

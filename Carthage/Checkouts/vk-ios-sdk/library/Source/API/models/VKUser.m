@@ -33,13 +33,6 @@
 
 @end
 
-@implementation VKUsersArray
-
--(Class)objectClass {
-    return [VKUser class];
-}
-@end
-
 @implementation VKGeoObject
 @end
 
@@ -52,19 +45,9 @@
 @implementation VKExports
 @end
 
-@implementation VKCareer
+@implementation VKUsersArray
+
+-(Class)objectClass {
+    return [VKUser class];
+}
 @end
-
-
-@implementation VKCrop
-@end
-
-@implementation VKCropPhoto
-@end
-
-@implementation VKMilitary
-@end
-
-@implementation VKOccupation
-@end
-

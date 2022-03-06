@@ -23,15 +23,6 @@
 
 #import "VKDocs.h"
 
-@implementation VKGraffiti
-@end
-
-@implementation VKAudioMsg
-@end
-
-@implementation VKDocsPreview
-@end
-
 @implementation VKDocs
 
 @end

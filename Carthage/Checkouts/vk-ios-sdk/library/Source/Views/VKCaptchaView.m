@@ -74,14 +74,10 @@ CGFloat kCaptchaViewHeight = 138;
         _captchaTextField.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin;
         [self addSubview:_captchaTextField];
         VKHTTPOperation *operation = [[VKHTTPOperation alloc] initWithURLRequest:[[VKHTTPClient getClient] requestWithMethod:@"GET" path:_error.captchaImg parameters:nil secure:NO]];
-        
-        __weak typeof(self) wself = self;
         [operation setCompletionBlockWithSuccess:^(VKHTTPOperation *operation, id responseObject) {
-            __strong typeof(self) self = wself;
-            [self->_captchaImage setImage:[UIImage imageWithData:operation.responseData]];
+            [_captchaImage setImage:[UIImage imageWithData:operation.responseData]];
         }                                failure:^(VKHTTPOperation *operation, NSError *error) {
         }];
-        
         [[VKHTTPClient getClient] enqueueOperation:operation];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceDidRotate:) name:UIDeviceOrientationDidChangeNotification object:nil];
         [self deviceDidRotate:nil];
@@ -91,8 +87,8 @@ CGFloat kCaptchaViewHeight = 138;
 
 - (void)deviceDidRotate:(NSNotification *)notification {
     [UIView animateWithDuration:notification ? 0.3 : 0 animations:^{
-        self->_captchaImage.frame = CGRectMake((self.bounds.size.width - kCaptchaImageWidth) / 2, 5, kCaptchaImageWidth, kCaptchaImageHeight);
-        self->_captchaTextField.frame = CGRectMake(self->_captchaImage.frame.origin.x, self->_captchaImage.frame.origin.y + kCaptchaImageHeight + 10, kCaptchaImageWidth, kCaptchaViewHeight - kCaptchaImageHeight - 10);
+        _captchaImage.frame = CGRectMake((self.bounds.size.width - kCaptchaImageWidth) / 2, 5, kCaptchaImageWidth, kCaptchaImageHeight);
+        _captchaTextField.frame = CGRectMake(_captchaImage.frame.origin.x, _captchaImage.frame.origin.y + kCaptchaImageHeight + 10, kCaptchaImageWidth, kCaptchaViewHeight - kCaptchaImageHeight - 10);
     }];
 }
 

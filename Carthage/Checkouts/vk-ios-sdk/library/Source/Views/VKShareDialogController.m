@@ -253,12 +253,16 @@ static const CGFloat ipadHeight = 500.f;
     [self rotateToInterfaceOrientation:orientation appear:YES];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        [self rotateToInterfaceOrientation:UIApplication.sharedApplication.statusBarOrientation appear:NO];
-    } completion:nil];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+
+    [self rotateToInterfaceOrientation:toInterfaceOrientation appear:NO];
 }
+
+#pragma clang diagnostic pop
 
 - (void)rotateToInterfaceOrientation:(UIInterfaceOrientation)orientation appear:(BOOL)onAppear {
     if (VK_IS_DEVICE_IPAD) {
@@ -327,6 +331,10 @@ static const CGFloat ipadHeight = 500.f;
 }
 
 - (BOOL)shouldAutorotate {
+    return YES;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
     return YES;
 }
 
@@ -683,7 +691,6 @@ static const CGFloat kAttachmentsViewSize = 100.0f;
     _textView = [[VKPlaceholderTextView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 36)];
 
     _textView.backgroundColor = [UIColor clearColor];
-    _textView.textColor = [UIColor blackColor];
     _textView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnavailableInDeploymentTarget"
@@ -905,6 +912,15 @@ static const CGFloat kAttachmentsViewSize = 100.0f;
     }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+#pragma clang diagnostic pop
+
 - (void)prepare {
 
     self.postSettings = [VKPostSettings new];
@@ -996,8 +1012,6 @@ static const CGFloat kAttachmentsViewSize = 100.0f;
         [[[UIAlertView alloc] initWithTitle:nil message:VKLocalizedString(@"ErrorWhilePosting") delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 #else
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:VKLocalizedString(@"ErrorWhilePosting") preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
-        [alert addAction:cancelAction];
         [self presentViewController:alert animated:YES completion:nil];
 #endif
     }];
@@ -1100,9 +1114,7 @@ static const CGFloat kAttachmentsViewSize = 100.0f;
         }
 
         VKRequest *req = [VKRequest requestWithMethod:@"photos.getById" parameters:@{@"photos" : [parent.vkImages componentsJoinedByString:@","], @"photo_sizes" : @1} modelClass:[VKPhotoArray class]];
-        __weak typeof(self) wself = self;
         [req executeWithResultBlock:^(VKResponse *res) {
-            __strong typeof(self) self = wself;
             VKPhotoArray *photos = res.parsedModel;
             NSArray *requiredSizes = @[@"p", @"q", @"m"];
             for (VKPhoto *photo in photos) {
@@ -1138,7 +1150,7 @@ static const CGFloat kAttachmentsViewSize = 100.0f;
                     [self removeAttachIfExists:attach];
                     [self.attachmentsScrollView reloadData];
                 }];
-                imageLoad.successCallbackQueue = self->imageProcessingQueue;
+                imageLoad.successCallbackQueue = imageProcessingQueue;
                 [[VKHTTPClient getClient] enqueueOperation:imageLoad];
             }
             [self.attachmentsScrollView performBatchUpdates:^{
